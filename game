@@ -1,0 +1,618 @@
+```html
+<!DOCTYPE html>
+<html lang="zh-HK">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <title>一年級地球的特徵遊戲化評估 / Grade 1 Earth Features Assessment</title>
+  <style>
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow: scroll;
+      font-family: 'Arial', sans-serif;
+      background: linear-gradient(to bottom, #87ceeb, #0066cc);
+      color: #242424;
+      overflow: scroll;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+
+    body {
+      -webkit-user-select: none;
+      -ms-user-select: none;
+    }
+
+    #game-container {
+      width: 100vw;
+      min-height: 100vh;
+      overflow: visible;
+      position: relative;
+      padding-bottom: 160px;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      box-sizing: border-box;
+    }
+
+    #earth-rotating-container {
+      width: 320px;
+      height: 320px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 240px;
+      user-select: none;
+      animation: slow-rotate-earth 30s linear infinite;
+      filter: drop-shadow(0 0 15px rgba(0, 170, 255, 0.9));
+      margin-top: 20px;
+      margin-bottom: 8px;
+    }
+
+    @keyframes slow-rotate-earth {
+      from {
+        transform: rotate(0deg);
+      }
+
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    #question-box {
+      position: relative;
+      margin: 0 auto 12px auto;
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 15px;
+      padding: 30px 25px 120px 25px;
+      max-width: 720px;
+      font-size: 28px;
+      font-weight: bold;
+      text-align: center;
+      box-shadow: 0 0 12px #888;
+      box-sizing: border-box;
+      width: 90vw;
+      min-height: 330px;
+      line-height: 1.25em;
+      color: #222;
+      user-select: none;
+    }
+
+    #question-text {
+      margin-bottom: 8px;
+      cursor: pointer; /* Indicate that it's interactive */
+    }
+
+    #question-text span {
+      font-weight: normal;
+      display: block;
+      font-size: 18px;
+      color: #555;
+    }
+
+    #answers {
+      display: flex;
+      flex-wrap: nowrap;
+      justify-content: center;
+      margin-top: 30px;
+      max-width: 720px;
+      margin-left: auto;
+      margin-right: auto;
+      gap: 24px;
+
+      background-color: #000000;
+      border-radius: 20px;
+      padding: 20px 15px;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      box-sizing: border-box;
+      -webkit-user-select: none;
+      -webkit-touch-callout: none;
+      -webkit-tap-highlight-color: transparent;
+      -ms-touch-action: pan-y;
+      touch-action: pan-y;
+    }
+
+    #answers::-webkit-scrollbar {
+      height: 10px;
+    }
+
+    #answers::-webkit-scrollbar-thumb {
+      background-color: #77b300;
+      border-radius: 12px;
+    }
+
+    .answer-button {
+      background-color: transparent;
+      border: none;
+      color: white;
+      padding: 18px 16px;
+      margin: 0;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 28px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-width: 170px;
+      user-select: none;
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.8);
+      transition: transform 0.15s ease, box-shadow 0.15s ease,
+        background-color 0.3s ease;
+      height: 300px;
+      overflow: hidden;
+      justify-content: flex-start;
+      font-weight: bolder;
+      outline-offset: 4px;
+      outline: none;
+      position: relative;
+      -webkit-user-select: none;
+      -webkit-touch-callout: none;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+    }
+
+    .answer-button.correct {
+      box-shadow: 0 0 22px 7px #1aff1a inset;
+      border: 5px solid #0a6a0a;
+      color: #c7e7b0;
+      background-color: #033a01;
+      font-weight: bolder;
+    }
+
+    .answer-button.incorrect {
+      box-shadow: 0 0 22px 7px #ff4d4d inset;
+      border: 5px solid #a83232;
+      color: #f9c6c6;
+      background-color: #390606;
+      font-weight: bolder;
+    }
+
+    .answer-button:focus {
+      outline: 5px solid #ffcc00;
+      outline-offset: 5px;
+      z-index: 10;
+    }
+
+    .answer-button:hover:not(:disabled) {
+      transform: scale(1.15);
+      box-shadow: 0 12px 34px rgba(0, 0, 0, 0.95);
+      background-color: rgba(34, 44, 12, 0.9);
+    }
+
+    .answer-icon {
+      width: 180px;
+      height: 180px;
+      margin-bottom: 20px;
+      border-radius: 24px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 160px;
+      transition: transform 0.3s ease;
+      text-shadow: 0 0 6px #000000bb;
+      user-select: none;
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.9);
+      background-color: #000;
+      color: white;
+    }
+
+    /* Deep green background for land related icons */
+    .land {
+      background-color: #06470c;
+    }
+
+    /* Deep blue background for water related icons */
+    .water {
+      background-color: #002366;
+    }
+
+    /* Neutral background for others */
+    .neutral {
+      background-color: #444444;
+    }
+
+    /* Distinct yellow background for square answer */
+    .square-icon {
+      background-color: #e6d815 !important;
+      color: #000000 !important;
+      font-weight: bolder;
+      text-shadow: none !important;
+    }
+
+    #feedback {
+      margin-top: 48px;
+      font-size: 32px;
+      font-weight: bold;
+      color: #0a6a0a;
+      height: 3.5em;
+      text-align: center;
+      user-select: none;
+      min-height: 48px;
+      transition: color 0.3s ease;
+      max-width: 720px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    #restart-button {
+      margin-top: 30px;
+      font-size: 24px;
+      padding: 12px 24px;
+      border-radius: 20px;
+      border: none;
+      background-color: #77b300;
+      color: white;
+      cursor: pointer;
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.7);
+      user-select: none;
+      font-weight: bolder;
+      transition: background-color 0.3s ease;
+      width: 200px;
+      display: none;
+    }
+
+    #restart-button:hover,
+    #restart-button:focus {
+      background-color: #558000;
+      outline: none;
+    }
+
+    #start-page {
+      width: 100vw;
+      height: 100vh;
+      background: #87ceeb;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 1000;
+      user-select: none;
+    }
+
+    #start-title {
+      font-size: 48px;
+      font-weight: bold;
+      margin-bottom: 40px;
+      color: #004080;
+      text-align: center;
+      line-height: 1.3em;
+    }
+
+    #start-button {
+      font-size: 36px;
+      padding: 20px 40px;
+      border-radius: 25px;
+      background: #77b300;
+      border: none;
+      color: #fff;
+      cursor: pointer;
+      font-weight: bold;
+      box-shadow: 0 0 12px rgba(0, 0, 0, 0.3);
+      user-select: none;
+      transition: background-color 0.3s ease;
+    }
+
+    #start-button:hover,
+    #start-button:focus {
+      background-color: #558000;
+      outline: none;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="instruction" aria-live="polite">
+    使用鍵盤方向鍵或滑鼠/觸控選擇答案 遊戲開始時會有語音朗讀題目和提示<br />
+    Use arrow keys or mouse/touch to select answers Questions are read aloud
+  </div>
+  <div id="start-page">
+    <div id="start-title">一年級地球的特徵遊戲化評估<br />Grade 1 Earth Features Assessment</div>
+    <button id="start-button" aria-label="開始遊戲 Start Game">開始遊戲 Start Game</button>
+  </div>
+
+  <div id="game-container" role="main" aria-label="一年級地球的特徵遊戲化評估 / Grade 1 Earth Features Assessment" style="display:none;">
+    <div id="earth-rotating-container" aria-hidden="true" title="Earth icon" role="img">🌍</div>
+
+    <canvas id="background-canvas" width="800" height="600" aria-hidden="true"></canvas>
+    <div id="question-box" role="region" aria-live="assertive" aria-atomic="true" tabindex="0">
+      <div id="question-text" tabindex="0"></div>
+      <div id="answers"></div>
+      <div id="feedback" aria-live="assertive" aria-atomic="true"></div>
+      <button id="restart-button" aria-label="再做一次 Play Again">再做一次 Play Again</button>
+    </div>
+  </div>
+
+  <audio id="celebrate-sound" src="https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg"></audio>
+
+  <script>
+    (() => {
+      const questions = [
+        {
+          question: { zh: "地球是什麼形狀", en: "What shape is the Earth" },
+          answers: [
+            { text: { zh: "球體", en: "Sphere" }, icon: "🌍", type: "neutral" },
+            { text: { zh: "方形", en: "Square" }, icon: "⬛", type: "neutral", specialClass: "square-icon" },
+            { text: { zh: "三角形", en: "Triangle" }, icon: "▲", type: "neutral" }
+          ],
+          correct: 0
+        },
+        {
+          question: { zh: "地球上有什麼", en: "What is on the Earth" },
+          answers: [
+            { text: { zh: "水和陸地", en: "Water and Land" }, icon: "🌍", type: "neutral" },
+            { text: { zh: "只有水", en: "Only Water" }, icon: "💧", type: "water" },
+            { text: { zh: "只有陸地", en: "Only Land" }, icon: "🌲", type: "land" }
+          ],
+          correct: 0
+        },
+        {
+          question: { zh: "地球是否被大氣層包覆住", en: "Is the Earth covered by an atmosphere" },
+          answers: [
+            { text: { zh: "是", en: "Yes" }, icon: "🌫️", type: "neutral" },
+            { text: { zh: "否", en: "No" }, icon: "❌", type: "neutral" }
+          ],
+          correct: 0
+        },
+        {
+          question: { zh: "地球中表面覆蓋較多的是", en: "What covers most of Earth's surface" },
+          answers: [
+            { text: { zh: "海洋", en: "Ocean" }, icon: "🌊", type: "water" },
+            { text: { zh: "陸地", en: "Land" }, icon: "🌳", type: "land" }
+          ],
+          correct: 0
+        },
+        {
+          question: { zh: "人類生活於陸地還是海洋", en: "Do humans live on land or in the ocean" },
+          answers: [
+            { text: { zh: "陸地", en: "Land" }, icon: "🏠", type: "land" },
+            { text: { zh: "海洋", en: "Ocean" }, icon: "⚓", type: "water" }
+          ],
+          correct: 0
+        },
+        {
+          question: { zh: "以下那種物體是生物", en: "Which of the following is a living thing" },
+          answers: [
+            { text: { zh: "蝴蝶", en: "Butterfly" }, icon: "🦋", type: "land" },
+            { text: { zh: "石頭", en: "Rock" }, icon: "🪨", type: "neutral" },
+            { text: { zh: "水", en: "Water" }, icon: "💧", type: "water" }
+          ],
+          correct: 0
+        }
+      ];
+
+      const earthRotatingContainer = document.getElementById("earth-rotating-container");
+      const canvas = document.getElementById("background-canvas");
+      const ctx = canvas.getContext("2d");
+      const questionText = document.getElementById("question-text");
+      const answersDiv = document.getElementById("answers");
+      const feedbackDiv = document.getElementById("feedback");
+      const celebrateSound = document.getElementById("celebrate-sound");
+      const restartButton = document.getElementById("restart-button");
+      const startPage = document.getElementById("start-page");
+      const startButton = document.getElementById("start-button");
+      const gameContainer = document.getElementById("game-container");
+
+      let currentQuestionIndex = 0;
+      let score = 0;
+      let isGameOver = false;
+      let nextQuestionTimeout = null;
+
+      startButton.addEventListener("click", () => {
+        startPage.style.display = "none";
+        gameContainer.style.display = "flex";
+        loadQuestion();
+        gameLoop();
+      });
+
+      restartButton.addEventListener("click", () => {
+        currentQuestionIndex = 0;
+        score = 0;
+        restartButton.style.display = "none";
+        feedbackDiv.textContent = "";
+        loadQuestion();
+      });
+
+      // Play speech synthesis with cancellation of any ongoing speech
+      function playSpeech(text) {
+        if ("speechSynthesis" in window) {
+          window.speechSynthesis.cancel();
+          let utterance = new SpeechSynthesisUtterance(text);
+          utterance.lang = "zh-HK";
+          window.speechSynthesis.speak(utterance);
+        }
+      }
+
+      function drawBackground() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        const starsCount = 100;
+        for (let i = 0; i < starsCount; i++) {
+          let x = ((i * 37 + Date.now() / 55) % canvas.width);
+          let y = ((i * 52 + Date.now() / 75) % canvas.height);
+          ctx.beginPath();
+          ctx.arc(x, y, 1.5 + 0.5 * Math.sin(Date.now() / 220 + i), 0, Math.PI * 2);
+          ctx.fillStyle = "white";
+          ctx.fill();
+        }
+      }
+
+      function loadQuestion() {
+        clearTimeout(nextQuestionTimeout);
+        isGameOver = false;
+        restartButton.style.display = "none";
+        feedbackDiv.textContent = "";
+        if (currentQuestionIndex >= questions.length) {
+          questionText.innerHTML = `<div>答題完成 你答對了 ${score} / ${questions.length} 題</div>
+            <div style="font-weight: normal; font-size: 20px; color:#444;">Quiz finished You got ${score} out of ${questions.length} correct</div>`;
+          answersDiv.innerHTML = "";
+          playSpeech(`答題完成 你答對了 ${score} 題`);
+          celebrateSound.play();
+          nextQuestionTimeout = setTimeout(() => {
+            restartButton.style.display = "inline-block";
+          }, 2500);
+          return;
+        }
+
+        const current = questions[currentQuestionIndex];
+        questionText.innerHTML = `<div tabindex="0">${current.question.zh}</div><div style="font-weight: normal; font-size: 20px; color:#444;">${current.question.en}</div>`;
+        answersDiv.innerHTML = "";
+
+        // Play speech of question on mouse enter, focus
+        const questionDiv = questionText.querySelector("div");
+        questionDiv.addEventListener("mouseenter", () => playSpeech(current.question.zh));
+        questionDiv.addEventListener("focus", () => playSpeech(current.question.zh));
+
+        current.answers.forEach((answerObj, index) => {
+          const btn = document.createElement("button");
+          btn.className = "answer-button";
+          btn.type = "button";
+          btn.setAttribute("data-index", index);
+          btn.setAttribute("aria-label", `答題選項 ${index + 1} ${answerObj.text.zh} ${answerObj.text.en}`);
+
+          const iconDiv = document.createElement("div");
+          iconDiv.className = "answer-icon";
+
+          if (currentQuestionIndex === 0 && answerObj.text.zh === "方形") {
+            iconDiv.classList.add("square-icon");
+          } else if (answerObj.type === "land") {
+            iconDiv.classList.add("land");
+          } else if (answerObj.type === "water") {
+            iconDiv.classList.add("water");
+          } else {
+            iconDiv.classList.add("neutral");
+          }
+
+          iconDiv.textContent = answerObj.icon;
+          btn.appendChild(iconDiv);
+
+          const span = document.createElement("span");
+          span.textContent = `${answerObj.text.zh} ${answerObj.text.en}`;
+          span.style.marginTop = "10px";
+          btn.appendChild(span);
+
+          btn.addEventListener("click", () => answerSelected(index));
+          btn.addEventListener("mouseenter", () => {
+            if (!isGameOver) playSpeech(answerObj.text.zh);
+          });
+          btn.addEventListener("focus", () => {
+            if (!isGameOver) playSpeech(answerObj.text.zh);
+          });
+
+          answersDiv.appendChild(btn);
+        });
+
+        const firstBtn = answersDiv.querySelector("button");
+        if (firstBtn) firstBtn.focus();
+
+        playSpeech(current.question.zh);
+      }
+
+      function setFeedback(text, color) {
+        feedbackDiv.textContent = text;
+        feedbackDiv.style.color = color;
+        playSpeech(text);
+      }
+
+      function answerSelected(selectedIndex) {
+        if (isGameOver) return;
+        isGameOver = true;
+        const current = questions[currentQuestionIndex];
+        const correctIndex = current.correct;
+        const answerButtons = answersDiv.querySelectorAll("button");
+
+        if (selectedIndex === correctIndex) {
+          answerButtons.forEach((btn, idx) => {
+            btn.disabled = true;
+            if (idx === correctIndex) btn.classList.add("correct");
+            else btn.classList.remove("correct", "incorrect");
+          });
+          setFeedback("你答啱咗 做得好好", "#0a6a0a");
+          score++;
+
+          celebrateSound.play();
+
+          nextQuestionTimeout = setTimeout(() => {
+            currentQuestionIndex++;
+            loadQuestion();
+            isGameOver = false;
+          }, 5000);
+        } else {
+          answerButtons[selectedIndex].classList.add("incorrect");
+          setFeedback("加油 再試一次", "#a83232");
+          answerButtons.forEach((btn, idx) => {
+            if (idx === selectedIndex) btn.disabled = true;
+            else {
+              btn.disabled = false;
+              btn.classList.remove("incorrect", "correct");
+            }
+          });
+          isGameOver = false;
+        }
+      }
+
+      document.addEventListener("keydown", (e) => {
+        const focused = document.activeElement;
+        const answerButtons = answersDiv.querySelectorAll("button");
+        if (!answerButtons.length) return;
+
+        let index = Array.from(answerButtons).indexOf(focused);
+
+        switch (e.key) {
+          case "ArrowDown":
+          case "ArrowRight":
+            e.preventDefault();
+            if (index < answerButtons.length - 1)
+              answerButtons[index + 1].focus();
+            else answerButtons[0].focus();
+            break;
+          case "ArrowUp":
+          case "ArrowLeft":
+            e.preventDefault();
+            if (index > 0) answerButtons[index - 1].focus();
+            else answerButtons[answerButtons.length - 1].focus();
+            break;
+          case "Enter":
+          case " ":
+            if (index >= 0 && !answerButtons[index].disabled) {
+              e.preventDefault();
+              answerSelected(index);
+            }
+            break;
+        }
+      });
+
+      function gameLoop() {
+        drawBackground();
+        window.requestAnimationFrame(gameLoop);
+      }
+
+      function resizeCanvas() {
+        canvas.width = Math.min(window.innerWidth, 800);
+        canvas.height = Math.min(window.innerHeight * 0.6, 600);
+      }
+
+      window.addEventListener("resize", () => {
+        resizeCanvas();
+      });
+
+      function init() {
+        resizeCanvas();
+        document.getElementById("game-container").style.display = "none";
+        document.getElementById("start-page").style.display = "flex";
+      }
+
+      window.onload = () => {
+        init();
+      };
+    })();
+  </script>
+</body>
+
+</html>
+```
